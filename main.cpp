@@ -77,6 +77,9 @@ int main(int argc, char *argv[])
 								// Check events, if ESC then Quit
 								SDL_Event event;
 
+								// Put the Game Controller events into the Queue
+								SDL_GameControllerUpdate();
+
 								// Event Processing Loop
 								while (SDL_PollEvent(&event) == 1)
 								{
@@ -103,6 +106,12 @@ int main(int argc, char *argv[])
 													break;
 											}
 											break;
+										case SDL_CONTROLLERDEVICEADDED:
+											//SDL_EventState(SDL_CONTROLLERBUTTONDOWN, SDL_ENABLE);
+											SDL_GameControllerOpen(0);
+											SDL_Log("Controller plugged in!");
+											break;
+										case SDL_CONTROLLERBUTTONDOWN:
 										case SDL_MOUSEBUTTONDOWN:
 
 											// Swap the image number tracker
