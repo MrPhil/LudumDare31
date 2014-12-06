@@ -22,10 +22,22 @@ int main(int something, char *args[])
 			800,
 			0);
 
-		SDL_ShowSimpleMessageBox(0, 
-			WindowTitle,
-			"Hellow World!",
-			window);
+		if (window)
+		{
+			// Now a message box
+			SDL_ShowSimpleMessageBox(0,
+				WindowTitle,
+				"Hello World!",
+				window);
+
+			// Now an image
+			char *imagePath = ".\\Data\\Images\\HelloWorld.png";
+
+			SDL_DestroyWindow(window);
+		}
+	
+		// All Done
+		SDL_Quit();
 	}
 
 
