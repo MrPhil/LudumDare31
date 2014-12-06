@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
 
 			if (Global.Renderer != NULL)
 			{
+				// One time clear before kicking off the Game Loop
+				ClearRenderer();
+
 				// Initialize the Image reader lib (PNG)
 				if (IMG_Init(IMG_INIT_PNG) == IMG_INIT_PNG)
 				{
@@ -41,109 +44,94 @@ int main(int argc, char *argv[])
 					char image2Path[] = ".\\Data\\Images\\Ludum Dare 31.png";
 
 					// Load Image from File
-					SDL_Texture *texture = Load(image1Path);
+					Global.BackgroundTexture = Load(image1Path);
 
 					int imageNumber = 1;
-					
-					if (texture != NULL)
+					bool Running = true;
+
+					// Game Loop
+					while (Running)
 					{
-						bool Running = true;
+						// Check events
+						SDL_Event event;
 
-						// Game Loop
-						while (Running)
+						// Event Processing Loop
+						while (SDL_PollEvent(&event) == 1)
 						{
-							// Check events
-							SDL_Event event;
-
-							// Event Processing Loop
-							while (SDL_PollEvent(&event) == 1)
+							// Process the event
+							switch (event.type)
 							{
-								// Process the event
-								switch (event.type)
+							case SDL_QUIT:
+								Running = false;
+								break;
+							case SDL_KEYDOWN:
+								switch (event.key.keysym.sym)
 								{
-								case SDL_QUIT:
+								case SDLK_ESCAPE:
 									Running = false;
 									break;
-								case SDL_KEYDOWN:
-									switch (event.key.keysym.sym)
-									{
-									case SDLK_ESCAPE:
-										Running = false;
-										break;
-									case SDLK_KP_ENTER:
-										// Now a message box
-										SDL_ShowSimpleMessageBox(0,
-											WindowTitle,
-											"Good Job! You Pressed Keypad Enter!",
-											Global.Window);
-										break;
-									case SDLK_a:
-										SDL_Log("A Press!");
-										break;
-									}
+								case SDLK_KP_ENTER:
+									// Now a message box
+									SDL_ShowSimpleMessageBox(0,
+										WindowTitle,
+										"Good Job! You Pressed Keypad Enter!",
+										Global.Window);
 									break;
-								case SDL_CONTROLLERDEVICEADDED:
-									if (Global.PlayerControllerId == -1)
-									{
-										Global.PlayerControllerId = event.cdevice.which;
-										SDL_GameControllerOpen(0);
-										SDL_Log("Player 1 controller plugged in!");
-									}
-									else
-									{
-										SDL_Log("Unused controller plugged in!");
-									}
-									break;
-								case SDL_CONTROLLERBUTTONDOWN:
-								case SDL_MOUSEBUTTONDOWN:
-
-									// Swap the image number tracker
-									SDL_Texture *newTexture;
-									if (imageNumber == 1)
-									{
-										imageNumber = 2;
-
-										// Load the new Surface/Image #2
-										newTexture = Load(image2Path);
-									}
-									else
-									{
-										imageNumber = 1;
-
-										// Load the new Surface/Image #1
-										newTexture = Load(image1Path);
-									}
-
-									// Now create a Texture from it
-									if (newTexture != NULL)
-									{
-										SDL_Texture *oldTexture = texture;
-
-										// Save the new Texture
-										texture = newTexture;
-
-										// Destroy the old texture
-										SDL_DestroyTexture(oldTexture);
-									}
+								case SDLK_a:
+									SDL_Log("A Press!");
 									break;
 								}
+								break;
+							case SDL_CONTROLLERDEVICEADDED:
+								if (Global.PlayerControllerId == -1)
+								{
+									Global.PlayerControllerId = event.cdevice.which;
+									SDL_GameControllerOpen(0);
+									SDL_Log("Player 1 controller plugged in!");
+								}
+								else
+								{
+									SDL_Log("Unused controller plugged in!");
+								}
+								break;
+							case SDL_CONTROLLERBUTTONDOWN:
+							case SDL_MOUSEBUTTONDOWN:
+
+								// Swap the image number tracker
+								SDL_Texture *newTexture;
+								if (imageNumber == 1)
+								{
+									imageNumber = 2;
+
+									// Load the new Surface/Image #2
+									newTexture = Load(image2Path);
+								}
+								else
+								{
+									imageNumber = 1;
+
+									// Load the new Surface/Image #1
+									newTexture = Load(image1Path);
+								}
+
+								// Now create a Texture from it
+								if (newTexture != NULL)
+								{
+									// Destroy the old texture
+									SDL_DestroyTexture(Global.BackgroundTexture);
+
+									// Save the new Texture
+									Global.BackgroundTexture = newTexture;
+								}
+								break;
 							}
-
-							// Let's clear out the Renderer with MrPhil Green
-							SDL_SetRenderDrawColor(Global.Renderer, 130, 198, 74, 255);
-
-							//Clear screen
-							SDL_RenderClear(Global.Renderer);
-
-							// Put image (aka Surface) on the screen
-							SDL_RenderCopy(Global.Renderer, texture, NULL, NULL);
-
-							// Show use what we've done!
-							SDL_RenderPresent(Global.Renderer);
 						}
 
-						SDL_DestroyTexture(texture);
+						Render();
 					}
+
+					SDL_DestroyTexture(Global.BackgroundTexture);
+					SDL_DestroyTexture(Global.PlayerSprite);
 
 					// Shutdown the Image Reader
 					IMG_Quit();

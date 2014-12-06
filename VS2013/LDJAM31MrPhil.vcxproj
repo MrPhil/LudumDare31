@@ -14,6 +14,7 @@
     <ClCompile Include="..\Image.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\Misc.cpp" />
+    <ClCompile Include="..\Render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Core.h" />
