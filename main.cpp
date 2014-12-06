@@ -52,17 +52,12 @@ int main(int argc, char *argv[])
 						// Game Loop
 						while (Running)
 						{
-							// Check events, if ESC then Quit
+							// Check events
 							SDL_Event event;
-
-							// Put the Game Controller events into the Queue
-							//SDL_GameControllerUpdate();
 
 							// Event Processing Loop
 							while (SDL_PollEvent(&event) == 1)
 							{
-								// SDL_QUIT
-
 								// Process the event
 								switch (event.type)
 								{
@@ -82,12 +77,22 @@ int main(int argc, char *argv[])
 											"Good Job! You Pressed Keypad Enter!",
 											Global.Window);
 										break;
+									case SDLK_a:
+										SDL_Log("A Press!");
+										break;
 									}
 									break;
 								case SDL_CONTROLLERDEVICEADDED:
-									//SDL_EventState(SDL_CONTROLLERBUTTONDOWN, SDL_ENABLE);
-									SDL_GameControllerOpen(0);
-									SDL_Log("Controller plugged in!");
+									if (Global.PlayerControllerId == -1)
+									{
+										Global.PlayerControllerId = event.cdevice.which;
+										SDL_GameControllerOpen(0);
+										SDL_Log("Player 1 controller plugged in!");
+									}
+									else
+									{
+										SDL_Log("Unused controller plugged in!");
+									}
 									break;
 								case SDL_CONTROLLERBUTTONDOWN:
 								case SDL_MOUSEBUTTONDOWN:

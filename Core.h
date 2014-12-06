@@ -6,6 +6,7 @@ struct GlobalStruct
 {
 	SDL_Window *Window;
 	SDL_Renderer* Renderer;
+	Sint32 PlayerControllerId = -1;
 };
 
 extern GlobalStruct Global;
