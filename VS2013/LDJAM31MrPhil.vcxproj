@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Image.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\Misc.cpp" />
   </ItemGroup>
