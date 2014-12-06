@@ -5,11 +5,24 @@
 
 const char WindowTitle[25] = "MrPhil's Ludum Dare 31";
 
+void ReportSDL_Error(const char* contextOfError)
+{
+	SDL_Log(contextOfError);
+	const char* errorMessage = SDL_GetError();
+	SDL_Log(errorMessage);
+
+	// Pop-up Error Message
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
+		contextOfError,
+		errorMessage,
+		NULL);
+}
+
 int main(int argc, char *argv[])
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
-		SDL_Log(SDL_GetError());
+		ReportSDL_Error("SDL_Init");
 	}
 	else
 	{
@@ -149,14 +162,12 @@ int main(int argc, char *argv[])
 						}
 						else
 						{
-							SDL_Log("FAILED: SDL_CreateTextureFromSurface");
-							SDL_Log(SDL_GetError());
+							ReportSDL_Error("SDL_CreateTextureFromSurface");
 						}
 					}
 					else
 					{
-						SDL_Log("FAILED: IMG_Load");
-						SDL_Log(SDL_GetError());
+						ReportSDL_Error("IMG_Load");
 					}
 
 					// Shutdown the Image Reader
@@ -164,8 +175,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					SDL_Log("FAILED: IMG_Init");
-					SDL_Log(SDL_GetError());
+					ReportSDL_Error("IMG_Init");
 				}
 
 				// Get rid of our Renderer
@@ -173,8 +183,7 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
-				SDL_Log("FAILED: SDL_GetRenderer");
-				SDL_Log(SDL_GetError());
+				ReportSDL_Error("SDL_CreateRenderer");
 			}
 
 			// bye bye Window
@@ -182,8 +191,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			SDL_Log("FAILED: SDL_CreateWindow");
-			SDL_Log(SDL_GetError());
+			ReportSDL_Error("SDL_CreateWindow");
 		}
 
 		// All Done
