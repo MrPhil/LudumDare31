@@ -12,6 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\Misc.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Core.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9BC4132D-C181-477D-9281-74528749EFC2}</ProjectGuid>

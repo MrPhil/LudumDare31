@@ -1,22 +1,10 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include "Core.h"
 
 // Setup SDL2
 
 const char WindowTitle[25] = "MrPhil's Ludum Dare 31";
-
-void ReportSDL_Error(const char* contextOfError)
-{
-	SDL_Log(contextOfError);
-	const char* errorMessage = SDL_GetError();
-	SDL_Log(errorMessage);
-
-	// Pop-up Error Message
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
-		contextOfError,
-		errorMessage,
-		NULL);
-}
 
 int main(int argc, char *argv[])
 {
