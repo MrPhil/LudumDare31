@@ -37,12 +37,14 @@ int main(int argc, char *argv[])
 				// Initialize the Image reader lib (PNG)
 				if (IMG_Init(IMG_INIT_PNG) == IMG_INIT_PNG)
 				{
-					// Now an image
-					char imagePath[] = ".\\Data\\Images\\HelloWorld.png";
+					// Now some images
+					char image1Path[] = ".\\Data\\Images\\HelloWorld.png";
+					char image2Path[] = ".\\Data\\Images\\Ludum Dare 31.png";
 
 					// Load Image from File
 					SDL_Surface *surface;
-					surface = IMG_Load(imagePath);
+					surface = IMG_Load(image1Path);
+					int imageNumber = 1;
 					if (surface != NULL)
 					{
 						// Get the Texture from the Surface (our PNG)
@@ -50,26 +52,98 @@ int main(int argc, char *argv[])
 
 						if (texture != NULL)
 						{
-							// Let's clear out the Renderer with MrPhil Green
-							SDL_SetRenderDrawColor(renderer, 130, 198, 74, 255);
+							// We are done with the surface now
+							SDL_FreeSurface(surface);
+							surface = NULL;
 
-							//Clear screen
-							SDL_RenderClear(renderer);
+							bool Running = true;
 
-							//// 
-							//SDL_RenderCopy(renderer, texture, NULL, NULL);
+							// Game Loop
+							while (Running)
+							{
+								// Check events, if ESC then Quit
+								SDL_Event event;
 
-							// Show use what we've done!
-							SDL_RenderPresent(renderer);
+								// Event Processing Loop
+								while (SDL_PollEvent(&event) == 1)
+								{
+									// SDL_QUIT
 
-							// Give us time to see the window.
-							SDL_Delay(5000);
+									// Process the event
+									switch (event.type)
+									{
+										case SDL_QUIT:
+											Running = false;
+											break;
+										case SDL_KEYDOWN:
+											switch (event.key.keysym.sym)
+											{
+												case SDLK_ESCAPE:
+													Running = false;
+													break;
+												case SDLK_KP_ENTER:
+													// Now a message box
+													SDL_ShowSimpleMessageBox(0,
+														WindowTitle,
+														"Good Job! You Pressed Keypad Enter!",
+														window);
+													break;
+											}
+											break;
+										case SDL_MOUSEBUTTONDOWN:
 
-							// Now a message box
-							SDL_ShowSimpleMessageBox(0,
-								WindowTitle,
-								"Success!",
-								window);
+											// Swap the image number tracker
+											if (imageNumber == 1)
+											{
+												imageNumber = 2;
+
+												// Load the new Surface/Image #2
+												surface = IMG_Load(image2Path);
+											}
+											else
+											{
+												imageNumber = 1;
+
+												// Load the new Surface/Image #1
+												surface = IMG_Load(image1Path);
+											}
+											
+											// Now create a Texture from it
+											if (surface != NULL)
+											{
+												SDL_Texture *oldTexture = texture;
+
+												// Get the Texture from the Surface (our PNG)
+												SDL_Texture *newTexture = SDL_CreateTextureFromSurface(renderer, surface);
+
+												if (newTexture != NULL)
+												{
+													// Free the no longer needed Surface because now we have a Texture
+													SDL_FreeSurface(surface);
+
+													// Save the new Texture
+													texture = newTexture;
+
+													// Destroy the old texture
+													SDL_DestroyTexture(oldTexture);
+												}
+											}
+											break;
+									}
+								}
+
+								// Let's clear out the Renderer with MrPhil Green
+								SDL_SetRenderDrawColor(renderer, 130, 198, 74, 255);
+
+								//Clear screen
+								SDL_RenderClear(renderer);
+
+								// Put image (aka Surface) on the screen
+								SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+								// Show use what we've done!
+								SDL_RenderPresent(renderer);
+							}
 
 							SDL_DestroyTexture(texture);
 						}
@@ -78,9 +152,6 @@ int main(int argc, char *argv[])
 							SDL_Log("FAILED: SDL_CreateTextureFromSurface");
 							SDL_Log(SDL_GetError());
 						}
-
-						// We are done with the surface now
-						SDL_FreeSurface(surface);
 					}
 					else
 					{
