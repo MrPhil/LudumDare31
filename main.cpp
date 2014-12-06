@@ -4,6 +4,7 @@
 
 const char WindowTitle[25] = "MrPhil's Ludum Dare 31";
 
+// This holds our systems
 GlobalStruct Global;
 
 int main(int argc, char *argv[])
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
 							SDL_Event event;
 
 							// Put the Game Controller events into the Queue
-							SDL_GameControllerUpdate();
+							//SDL_GameControllerUpdate();
 
 							// Event Processing Loop
 							while (SDL_PollEvent(&event) == 1)
