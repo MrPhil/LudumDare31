@@ -27,7 +27,9 @@ struct GlobalStruct
 
 	Sint32 PlayerControllerId;
 	SDL_Texture *PlayerSprite;
-	SDL_Rect PlayerPosition;
+	SDL_Rect PlayerRect;
+	float PlayerPositionX; 
+	float PlayerPositionY;
 
 	void Init()
 	{
@@ -36,10 +38,12 @@ struct GlobalStruct
 		PlayerControllerId = -1;
 		BackgroundTexture = NULL;
 		PlayerSprite = NULL;
-		PlayerPosition.x = 24;
-		PlayerPosition.y = 24;
-		PlayerPosition.h = 30;
-		PlayerPosition.w = 30;
+		PlayerPositionX = 30;
+		PlayerPositionY = 30;
+		PlayerRect.x = (Uint32)PlayerPositionX;
+		PlayerRect.y = (Uint32)PlayerPositionY;
+		PlayerRect.h = 24;
+		PlayerRect.w = 24;
 		lastTime = 0;
 		delta = 0;
 	}

@@ -63,28 +63,30 @@ void ProcessPlayerMovement()
 	static float movementSpeed = 0.1f;
 
 	// Save this, so the player can be put back if there is a collision
-	SDL_Rect backPosition = Global.PlayerPosition;
+	float backX = Global.PlayerPositionX;
+	float backY = Global.PlayerPositionY;
+	SDL_Rect backPosition = Global.PlayerRect;
 
 	if (up)
 	{
 		if (left || right)
 		{
-			Global.PlayerPosition.y -= (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+			Global.PlayerPositionY -= movementSpeed * Global.delta * 0.5f;
 		}
 		else
 		{
-			Global.PlayerPosition.y -= (Uint32)rint(movementSpeed * Global.delta);
+			Global.PlayerPositionY -= movementSpeed * Global.delta;
 		}
 	}
 	else if (down)
 	{
 		if (left || right)
 		{
-			Global.PlayerPosition.y += (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+			Global.PlayerPositionY += movementSpeed * Global.delta * 0.5f;
 		}
 		else
 		{
-			Global.PlayerPosition.y += (Uint32)rint(movementSpeed * Global.delta);
+			Global.PlayerPositionY += movementSpeed * Global.delta;
 		}
 	}
 								
@@ -92,24 +94,31 @@ void ProcessPlayerMovement()
 	{
 		if (up || down)
 		{
-			Global.PlayerPosition.x -= (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+			Global.PlayerPositionX -= movementSpeed * Global.delta * 0.5f;
 		}
 		else
 		{
-			Global.PlayerPosition.x -= (Uint32)rint(movementSpeed * Global.delta);
+			Global.PlayerPositionX -= movementSpeed * Global.delta;
 		}
 	}
 	else if(right)
 	{
 		if (up || down)
 		{
-			Global.PlayerPosition.x += (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+			Global.PlayerPositionX += movementSpeed * Global.delta * 0.5f;
 		}
 		else
 		{
-			Global.PlayerPosition.x += (Uint32)rint(movementSpeed * Global.delta);
+			Global.PlayerPositionX += movementSpeed * Global.delta;
 		}
 	}
+
+	// Calulate Collsion Test Rect
+	SDL_Rect textRect = {};
+	textRect.x = (Uint32)rint(Global.PlayerPositionX);
+	textRect.y = (Uint32)rint(Global.PlayerPositionY);
+	textRect.h = Global.PlayerRect.h;
+	textRect.w = Global.PlayerRect.w;
 
 	// Check to see if we hit anything
 	// For now, just check using the Rectangles
@@ -117,7 +126,7 @@ void ProcessPlayerMovement()
 	Sint32 colliderCount = Global.RockCount;
 	for (int index = 0; index < colliderCount; index++)
 	{
-		if (IsCollision(&Global.PlayerPosition, &Global.Rocks[index].RockPosition))
+		if (IsCollision(&textRect, &Global.Rocks[index].RockPosition))
 		{
 			bump = true;
 			break;
@@ -126,7 +135,15 @@ void ProcessPlayerMovement()
 
 	if (bump)
 	{
-		Global.PlayerPosition = backPosition;
+		Global.PlayerPositionX = backX;
+		Global.PlayerPositionY = backY;
+		Global.PlayerRect = backPosition;
+	}
+	else
+	{
+		// Translate Position to the Sprites Rectangle
+		Global.PlayerRect.x = (Uint32)rint(Global.PlayerPositionX);
+		Global.PlayerRect.y = (Uint32)rint(Global.PlayerPositionY);
 	}
 }
 
@@ -374,10 +391,10 @@ int main(int argc, char *argv[])
 						// go to sleep and let the CPU
 						// do something else
 						// 60 FPS means each frames takes 16.67 milliseconds
-						// I use 15 ms to give it a little wiggle room
-						if (Global.delta < 15.0f)
+						// I use 8 ms to give it a little wiggle room
+						if (Global.delta < 16.67f)
 						{
-							SDL_Delay((Uint32)(rint(15.0f - Global.delta)));
+							SDL_Delay(0);
 						}
 					}
 

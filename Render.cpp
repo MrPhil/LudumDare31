@@ -8,7 +8,7 @@ void Render()
 	SDL_RenderCopy(Global.Renderer, Global.BackgroundTexture, NULL, NULL);
 
 	// Render the Player
-	SDL_RenderCopy(Global.Renderer, Global.PlayerSprite, NULL, &Global.PlayerPosition);
+	SDL_RenderCopy(Global.Renderer, Global.PlayerSprite, NULL, &Global.PlayerRect);
 
 	// Render the Rocks
 	for (int index = 0; index < Global.RockCount; index++)
