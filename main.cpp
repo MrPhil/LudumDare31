@@ -54,8 +54,8 @@ void SwapBackground()
 bool IsCollision(const SDL_Rect *a, const SDL_Rect *b)
 {
 	// Source: http://gamedev.stackexchange.com/questions/586/what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
-	return (abs(a->x - b->x) * 2 <= (a->w + b->w)) &&
-		(abs(a->y - b->y) * 2 <= (a->h + b->h));
+	return (abs(a->x - b->x) * 2 < (a->w + b->w)) &&
+		(abs(a->y - b->y) * 2 < (a->h + b->h));
 }
 
 void ProcessPlayerMovement()

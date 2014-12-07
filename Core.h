@@ -38,8 +38,8 @@ struct GlobalStruct
 		PlayerControllerId = -1;
 		BackgroundTexture = NULL;
 		PlayerSprite = NULL;
-		PlayerPositionX = 30;
-		PlayerPositionY = 30;
+		PlayerPositionX = 24;
+		PlayerPositionY = 24;
 		PlayerRect.x = (Uint32)PlayerPositionX;
 		PlayerRect.y = (Uint32)PlayerPositionY;
 		PlayerRect.h = 24;
