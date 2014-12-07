@@ -7,10 +7,76 @@ const char WindowTitle[25] = "MrPhil's Ludum Dare 31";
 // This holds our systems
 GlobalStruct Global;
 
+bool up = false;
+bool down = false;
+bool left = false;
+bool right = false;
+
+void SwapBackground()
+{
+	char image1Path[] = ".\\Data\\Images\\Ludum Dare 31.png";
+	char image2Path[] = ".\\Data\\Images\\HelloWorld.png";
+
+	static int imageNumber = 1;
+
+	// Swap the image number tracker
+	SDL_Texture *newTexture;
+	if (imageNumber == 1)
+	{
+		imageNumber = 2;
+
+		// Load the new Surface/Image #2
+		newTexture = Load(image2Path);
+	}
+	else
+	{
+		imageNumber = 1;
+
+		// Load the new Surface/Image #1
+		newTexture = Load(image1Path);
+	}
+
+	// Now create a Texture from it
+	if (newTexture != NULL)
+	{
+		// Destroy the old texture
+		SDL_DestroyTexture(Global.BackgroundTexture);
+
+		// Save the new Texture
+		Global.BackgroundTexture = newTexture;
+	}
+}
+
+void ProcessPlayerMovement()
+{
+	if (up)
+	{
+		Global.PlayerPosition.y -= 1;
+	}
+
+	if (down)
+	{
+		Global.PlayerPosition.y += 1;
+	}
+								
+	if (left)
+	{
+		Global.PlayerPosition.x -= 1;
+	}
+	
+	if(right)
+	{
+		Global.PlayerPosition.x += 1;
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	// Setup SDL2
 	SDL_Log("MrPhil's Ludum Dare 31 has started!");
+
+	// Step 1 - Initialize the Global
+	Global.Init();
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) // 0 means success
 	{
@@ -39,16 +105,11 @@ int main(int argc, char *argv[])
 				// Initialize the Image reader lib (PNG)
 				if (IMG_Init(IMG_INIT_PNG) == IMG_INIT_PNG)
 				{
-					// Now some images
-					char image1Path[] = ".\\Data\\Images\\Ludum Dare 31.png";
-					char image2Path[] = ".\\Data\\Images\\HelloWorld.png";
-					char imagePlayerSprite[] = ".\\Data\\Images\\PlayerSprite.png";
-
 					// Load Images from File to Global Texture Space
-					Global.BackgroundTexture = Load(image1Path);
+					SwapBackground();
+					char imagePlayerSprite[] = ".\\Data\\Images\\PlayerSprite.png";
 					Global.PlayerSprite = Load(imagePlayerSprite);
 
-					int imageNumber = 1;
 					bool Running = true;
 
 					// Game Loop
@@ -97,37 +158,64 @@ int main(int argc, char *argv[])
 								}
 								break;
 							case SDL_CONTROLLERBUTTONDOWN:
+								if (event.cbutton.which == Global.PlayerControllerId)
+								{
+									switch (event.cbutton.button)
+									{
+									case SDL_CONTROLLER_BUTTON_DPAD_UP:
+										up = true;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+										down = true;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+										left = true;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+										right = true;
+										break;
+									case SDL_CONTROLLER_BUTTON_A:
+										SwapBackground();
+										break;
+									case SDL_CONTROLLER_BUTTON_B:
+										SwapBackground();
+										break;
+									case SDL_CONTROLLER_BUTTON_X:
+										SwapBackground();
+										break;
+									case SDL_CONTROLLER_BUTTON_Y:
+										SwapBackground();
+										break;
+									}
+								}
+								break;
+							case SDL_CONTROLLERBUTTONUP:
+								if (event.cbutton.which == Global.PlayerControllerId)
+								{
+									switch (event.cbutton.button)
+									{
+									case SDL_CONTROLLER_BUTTON_DPAD_UP:
+										up = false;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+										down = false;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+										left = false;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+										right = false;
+										break;
+									}
+								}
+								break;
 							case SDL_MOUSEBUTTONDOWN:
-
-								// Swap the image number tracker
-								SDL_Texture *newTexture;
-								if (imageNumber == 1)
-								{
-									imageNumber = 2;
-
-									// Load the new Surface/Image #2
-									newTexture = Load(image2Path);
-								}
-								else
-								{
-									imageNumber = 1;
-
-									// Load the new Surface/Image #1
-									newTexture = Load(image1Path);
-								}
-
-								// Now create a Texture from it
-								if (newTexture != NULL)
-								{
-									// Destroy the old texture
-									SDL_DestroyTexture(Global.BackgroundTexture);
-
-									// Save the new Texture
-									Global.BackgroundTexture = newTexture;
-								}
+								SwapBackground();
 								break;
 							}
 						}
+
+						ProcessPlayerMovement();
 
 						Render();
 					}

@@ -6,9 +6,23 @@ struct GlobalStruct
 {
 	SDL_Window *Window;
 	SDL_Renderer* Renderer;
-	Sint32 PlayerControllerId = -1;
+	Sint32 PlayerControllerId;
 	SDL_Texture* BackgroundTexture;
 	SDL_Texture* PlayerSprite;
+	SDL_Rect PlayerPosition;
+
+	void Init()
+	{
+		Window = NULL;
+		Renderer = NULL;
+		PlayerControllerId = -1;
+		BackgroundTexture = NULL;
+		PlayerSprite = NULL;
+		PlayerPosition.x = 0;
+		PlayerPosition.y = 0;
+		PlayerPosition.h = 30;
+		PlayerPosition.w = 30;
+	}
 };
 
 extern GlobalStruct Global;

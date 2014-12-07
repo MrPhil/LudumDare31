@@ -7,10 +7,7 @@ void Render()
 	// Render Background
 	SDL_RenderCopy(Global.Renderer, Global.BackgroundTexture, NULL, NULL);
 
-	SDL_Rect rect = {};
-	rect.h = 30;
-	rect.w = 30;
-	SDL_RenderCopy(Global.Renderer, Global.PlayerSprite, NULL, &rect);
+	SDL_RenderCopy(Global.Renderer, Global.PlayerSprite, NULL, &Global.PlayerPosition);
 
 	// Show use what we've done!
 	SDL_RenderPresent(Global.Renderer); 
