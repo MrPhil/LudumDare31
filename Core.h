@@ -22,7 +22,7 @@ struct GlobalStruct
 
 	SDL_Texture *BackgroundTexture;
 
-	static const Sint32 RockCount = 200;
+	static const Sint32 RockCount = 300;
 	Rock Rocks[RockCount];
 
 	Sint32 PlayerControllerId;
@@ -36,8 +36,8 @@ struct GlobalStruct
 		PlayerControllerId = -1;
 		BackgroundTexture = NULL;
 		PlayerSprite = NULL;
-		PlayerPosition.x = 0;
-		PlayerPosition.y = 0;
+		PlayerPosition.x = 24;
+		PlayerPosition.y = 24;
 		PlayerPosition.h = 30;
 		PlayerPosition.w = 30;
 		lastTime = 0;

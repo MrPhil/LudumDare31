@@ -173,11 +173,85 @@ int main(int argc, char *argv[])
 					// Pick a background
 					SwapBackground();
 
-					// Place Rocks
-					for (int index = 0; index < Global.RockCount; index++)
+					// Place Border Lasers (Rocks that look like Lasers)
+					char imageRockSprite[] = ".\\Data\\Images\\LaserRock.png";
+					SDL_Texture *laserRockSprite = Load(imageRockSprite);
+					// - Left Fence - 800 / 24 = ~34
+					int y = 0;
+					for (int index = 0; index < 35; index++)
 					{
-						Global.Rocks[index].RockPosition.x = rand() % 1024;
-						Global.Rocks[index].RockPosition.y = rand() % 800;
+						Global.Rocks[index].RockPosition.x = 0;						
+						Global.Rocks[index].RockPosition.y = y;
+						Global.Rocks[index].RockPosition.h = 24;
+						Global.Rocks[index].RockPosition.w = 24;
+						Global.Rocks[index].RockTexture = laserRockSprite;
+
+						// Avance to the next colume
+						y += 24;
+					}
+					
+					// - Top Fence - 1024 / 24 = ~43
+					int x = 0;
+					for (int index = 35; index < 79; index++)
+					{
+						Global.Rocks[index].RockPosition.x = x;
+						Global.Rocks[index].RockPosition.y = 0;
+						Global.Rocks[index].RockPosition.h = 24;
+						Global.Rocks[index].RockPosition.w = 24;
+						Global.Rocks[index].RockTexture = laserRockSprite;
+
+						// Avance to the next colume
+						x += 24;
+					}
+
+					// - Right Fence - 800 / 24 = ~34
+					y = 0;
+					for (int index = 79; index < 114; index++)
+					{
+						Global.Rocks[index].RockPosition.x = 1000;
+						Global.Rocks[index].RockPosition.y = y;
+						Global.Rocks[index].RockPosition.h = 24;
+						Global.Rocks[index].RockPosition.w = 24;
+						Global.Rocks[index].RockTexture = laserRockSprite;
+
+						// Avance to the next colume
+						y += 24;
+					}
+
+					// - Top Fence - 1024 / 24 = ~43
+					x = 0;
+					for (int index = 114; index < 157; index++)
+					{
+						Global.Rocks[index].RockPosition.x = x;
+						Global.Rocks[index].RockPosition.y = 776;
+						Global.Rocks[index].RockPosition.h = 24;
+						Global.Rocks[index].RockPosition.w = 24;
+						Global.Rocks[index].RockTexture = laserRockSprite;
+
+						// Avance to the next colume
+						x += 24;
+					}
+
+					// Place Rocks
+					
+					for (int index = 157; index < Global.RockCount; index++)
+					{
+						// This is to keep the starting position open
+						x = -1;
+						while (x < 49)
+						{
+							x = rand() % 976;
+						}
+
+						y = -1;
+						while (y < 49)
+						{
+							y = rand() % 752;
+						}
+
+						// Now setup our Rock
+						Global.Rocks[index].RockPosition.x = x;
+						Global.Rocks[index].RockPosition.y = y;
 						Global.Rocks[index].RockPosition.h = 24;
 						Global.Rocks[index].RockPosition.w = 24;
 					}
@@ -289,26 +363,27 @@ int main(int argc, char *argv[])
 
 						// Calculate frame time
 						// NOTE(Ludington): Should I move this to the top?
-							Global.UpdateDelta();
+						Global.UpdateDelta();
 
-							// Move the player
-							ProcessPlayerMovement();
+						// Move the player
+						ProcessPlayerMovement();
 
-							Render();
+						Render();
 
-							// If we are running really fast 
-							// go to sleep and let the CPU
-							// do something else
-							// 60 FPS is frames that take 16.67 milliseconds
-							// I use 15 ms to give a little wiggle room
-							if (Global.delta < 15.0f)
-							{
-								SDL_Delay((Uint32)(rint(15.0f - Global.delta)));
-							}
+						// If we are running really fast 
+						// go to sleep and let the CPU
+						// do something else
+						// 60 FPS means each frames takes 16.67 milliseconds
+						// I use 15 ms to give it a little wiggle room
+						if (Global.delta < 15.0f)
+						{
+							SDL_Delay((Uint32)(rint(15.0f - Global.delta)));
+						}
 					}
 
 					// Clean up all the Textures we created
 					Global.DeleteTextures();
+					SDL_DestroyTexture(laserRockSprite);
 
 					// Shutdown the Image Reader
 					IMG_Quit();
