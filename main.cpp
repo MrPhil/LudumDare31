@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Core.h"
@@ -51,24 +52,52 @@ void SwapBackground()
 
 void ProcessPlayerMovement()
 {
+	static float movementSpeed = 0.6f;
+
 	if (up)
 	{
-		Global.PlayerPosition.y -= 1 * Global.delta;
+		if (left || right)
+		{
+			Global.PlayerPosition.y -= (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+		}
+		else
+		{
+			Global.PlayerPosition.y -= (Uint32)rint(movementSpeed * Global.delta);
+		}
 	}
-
-	if (down)
+	else if (down)
 	{
-		Global.PlayerPosition.y += 1 * Global.delta;
+		if (left || right)
+		{
+			Global.PlayerPosition.y += (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+		}
+		else
+		{
+			Global.PlayerPosition.y += (Uint32)rint(movementSpeed * Global.delta);
+		}
 	}
 								
 	if (left)
 	{
-		Global.PlayerPosition.x -= 1 * Global.delta;
+		if (up || down)
+		{
+			Global.PlayerPosition.x -= (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+		}
+		else
+		{
+			Global.PlayerPosition.x -= (Uint32)rint(movementSpeed * Global.delta);
+		}
 	}
-	
-	if(right)
+	else if(right)
 	{
-		Global.PlayerPosition.x += 1 * Global.delta;
+		if (up || down)
+		{
+			Global.PlayerPosition.x += (Uint32)rint(movementSpeed * Global.delta / 2.0f);
+		}
+		else
+		{
+			Global.PlayerPosition.x += (Uint32)rint(movementSpeed * Global.delta);
+		}
 	}
 }
 
@@ -171,6 +200,26 @@ int main(int argc, char *argv[])
 									SDL_Log("Unused controller plugged in!");
 								}
 								break;
+							case SDL_CONTROLLERBUTTONUP:
+								if (event.cbutton.which == Global.PlayerControllerId)
+								{
+									switch (event.cbutton.button)
+									{
+									case SDL_CONTROLLER_BUTTON_DPAD_UP:
+										up = false;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+										down = false;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+										left = false;
+										break;
+									case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+										right = false;
+										break;
+									}
+								}
+								break;
 							case SDL_CONTROLLERBUTTONDOWN:
 								if (event.cbutton.which == Global.PlayerControllerId)
 								{
@@ -203,26 +252,6 @@ int main(int argc, char *argv[])
 									}
 								}
 								break;
-							case SDL_CONTROLLERBUTTONUP:
-								if (event.cbutton.which == Global.PlayerControllerId)
-								{
-									switch (event.cbutton.button)
-									{
-									case SDL_CONTROLLER_BUTTON_DPAD_UP:
-										up = false;
-										break;
-									case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-										down = false;
-										break;
-									case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-										left = false;
-										break;
-									case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-										right = false;
-										break;
-									}
-								}
-								break;
 							case SDL_MOUSEBUTTONDOWN:
 								SwapBackground();
 								break;
@@ -231,12 +260,22 @@ int main(int argc, char *argv[])
 
 						// Calculate frame time
 						// NOTE(Ludington): Should I move this to the top?
-						Global.UpdateDelta();
+							Global.UpdateDelta();
 
-						// Move the player
-						ProcessPlayerMovement();
+							// Move the player
+							ProcessPlayerMovement();
 
-						Render();
+							Render();
+
+							// If we are running really fast 
+							// go to sleep and let the CPU
+							// do something else
+							// 60 FPS is frames that take 16.67 milliseconds
+							// I use 15 ms to give a little wiggle room
+							if (Global.delta < 15.0f)
+							{
+								SDL_Delay((Uint32)(rint(15.0f - Global.delta)));
+							}
 					}
 
 					// Clean up all the Textures we created

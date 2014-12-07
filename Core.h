@@ -18,8 +18,7 @@ struct GlobalStruct
 	SDL_Renderer *Renderer;
 
 	Uint32 lastTime = 0;
-	Uint32 currentTime;
-	Uint32 delta;
+	float delta;
 
 	SDL_Texture *BackgroundTexture;
 
@@ -42,14 +41,16 @@ struct GlobalStruct
 		PlayerPosition.h = 30;
 		PlayerPosition.w = 30;
 		lastTime = 0;
-		currentTime = 0;
 		delta = 0;
 	}
 
 	void UpdateDelta()
 	{
-		currentTime = SDL_GetTicks();
-		delta = currentTime - lastTime;
+		Uint32 currentTime = SDL_GetTicks();
+		delta = (float)(currentTime - (float)lastTime);
+
+		SDL_Log("%d - %d = %f", currentTime, lastTime, delta);
+
 		lastTime = currentTime;
 	}
 
