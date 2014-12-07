@@ -50,9 +50,20 @@ void SwapBackground()
 	}
 }
 
+
+bool IsCollision(const SDL_Rect *a, const SDL_Rect *b)
+{
+	// Source: http://gamedev.stackexchange.com/questions/586/what-is-the-fastest-way-to-work-out-2d-bounding-box-intersection
+	return (abs(a->x - b->x) * 2 <= (a->w + b->w)) &&
+		(abs(a->y - b->y) * 2 <= (a->h + b->h));
+}
+
 void ProcessPlayerMovement()
 {
-	static float movementSpeed = 0.6f;
+	static float movementSpeed = 0.1f;
+
+	// Save this, so the player can be put back if there is a collision
+	SDL_Rect backPosition = Global.PlayerPosition;
 
 	if (up)
 	{
@@ -98,6 +109,24 @@ void ProcessPlayerMovement()
 		{
 			Global.PlayerPosition.x += (Uint32)rint(movementSpeed * Global.delta);
 		}
+	}
+
+	// Check to see if we hit anything
+	// For now, just check using the Rectangles
+	bool bump = false;
+	Sint32 colliderCount = Global.RockCount;
+	for (int index = 0; index < colliderCount; index++)
+	{
+		if (IsCollision(&Global.PlayerPosition, &Global.Rocks[index].RockPosition))
+		{
+			bump = true;
+			break;
+		}
+	}
+
+	if (bump)
+	{
+		Global.PlayerPosition = backPosition;
 	}
 }
 
