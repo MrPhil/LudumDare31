@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <ctime>
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Core.h"
@@ -78,6 +80,8 @@ int main(int argc, char *argv[])
 	// Step 1 - Initialize the Global
 	Global.Init();
 
+	std::srand((Uint32)std::time(0));
+
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) // 0 means success
 	{
 		// We need a Window!
@@ -106,9 +110,19 @@ int main(int argc, char *argv[])
 				if (IMG_Init(IMG_INIT_PNG) == IMG_INIT_PNG)
 				{
 					// Load Images from File to Global Texture Space
+					Global.LoadSprites();
+
+					// Pick a background
 					SwapBackground();
-					char imagePlayerSprite[] = ".\\Data\\Images\\PlayerSprite.png";
-					Global.PlayerSprite = Load(imagePlayerSprite);
+
+					// Place Rocks
+					for (int index = 0; index < Global.RockCount; index++)
+					{
+						Global.Rocks[index].RockPosition.x = rand() % 1024;
+						Global.Rocks[index].RockPosition.y = rand() % 800;
+						Global.Rocks[index].RockPosition.h = 24;
+						Global.Rocks[index].RockPosition.w = 24;
+					}
 
 					bool Running = true;
 
@@ -225,8 +239,8 @@ int main(int argc, char *argv[])
 						Render();
 					}
 
-					SDL_DestroyTexture(Global.BackgroundTexture);
-					SDL_DestroyTexture(Global.PlayerSprite);
+					// Clean up all the Textures we created
+					Global.DeleteTextures();
 
 					// Shutdown the Image Reader
 					IMG_Quit();
