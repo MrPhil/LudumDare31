@@ -51,22 +51,22 @@ void ProcessPlayerMovement()
 {
 	if (up)
 	{
-		Global.PlayerPosition.y -= 1;
+		Global.PlayerPosition.y -= 1 * Global.delta;
 	}
 
 	if (down)
 	{
-		Global.PlayerPosition.y += 1;
+		Global.PlayerPosition.y += 1 * Global.delta;
 	}
 								
 	if (left)
 	{
-		Global.PlayerPosition.x -= 1;
+		Global.PlayerPosition.x -= 1 * Global.delta;
 	}
 	
 	if(right)
 	{
-		Global.PlayerPosition.x += 1;
+		Global.PlayerPosition.x += 1 * Global.delta;
 	}
 }
 
@@ -215,6 +215,11 @@ int main(int argc, char *argv[])
 							}
 						}
 
+						// Calculate frame time
+						// NOTE(Ludington): Should I move this to the top?
+						Global.UpdateDelta();
+
+						// Move the player
 						ProcessPlayerMovement();
 
 						Render();

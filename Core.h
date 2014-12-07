@@ -10,6 +10,9 @@ struct GlobalStruct
 	SDL_Texture* BackgroundTexture;
 	SDL_Texture* PlayerSprite;
 	SDL_Rect PlayerPosition;
+	Uint32 lastTime = 0;
+	Uint32 currentTime;
+	Uint32 delta;
 
 	void Init()
 	{
@@ -22,6 +25,16 @@ struct GlobalStruct
 		PlayerPosition.y = 0;
 		PlayerPosition.h = 30;
 		PlayerPosition.w = 30;
+		lastTime = 0;
+		currentTime = 0;
+		delta = 0;
+	}
+
+	void UpdateDelta()
+	{
+		currentTime = SDL_GetTicks();
+		delta = currentTime - lastTime;
+		lastTime = currentTime;
 	}
 };
 
