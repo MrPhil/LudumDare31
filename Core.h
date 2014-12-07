@@ -48,9 +48,6 @@ struct GlobalStruct
 	{
 		Uint32 currentTime = SDL_GetTicks();
 		delta = (float)(currentTime - (float)lastTime);
-
-		SDL_Log("%d - %d = %f", currentTime, lastTime, delta);
-
 		lastTime = currentTime;
 	}
 
