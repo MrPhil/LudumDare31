@@ -1,13 +1,16 @@
 #include <SDL.h>
 #include "Core.h"
 
+// Put images (aka Surfaces) on the screen
 void Render()
 {
 	// Render Background
 	SDL_RenderCopy(Global.Renderer, Global.BackgroundTexture, NULL, NULL);
 
-	// Put image (aka Surface) on the screen
-	SDL_RenderCopy(Global.Renderer, Global.PlayerSprite, NULL, NULL);
+	SDL_Rect rect = {};
+	rect.h = 30;
+	rect.w = 30;
+	SDL_RenderCopy(Global.Renderer, Global.PlayerSprite, NULL, &rect);
 
 	// Show use what we've done!
 	SDL_RenderPresent(Global.Renderer); 

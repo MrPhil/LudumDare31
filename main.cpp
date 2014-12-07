@@ -40,11 +40,13 @@ int main(int argc, char *argv[])
 				if (IMG_Init(IMG_INIT_PNG) == IMG_INIT_PNG)
 				{
 					// Now some images
-					char image1Path[] = ".\\Data\\Images\\HelloWorld.png";
-					char image2Path[] = ".\\Data\\Images\\Ludum Dare 31.png";
+					char image1Path[] = ".\\Data\\Images\\Ludum Dare 31.png";
+					char image2Path[] = ".\\Data\\Images\\HelloWorld.png";
+					char imagePlayerSprite[] = ".\\Data\\Images\\PlayerSprite.png";
 
-					// Load Image from File
+					// Load Images from File to Global Texture Space
 					Global.BackgroundTexture = Load(image1Path);
+					Global.PlayerSprite = Load(imagePlayerSprite);
 
 					int imageNumber = 1;
 					bool Running = true;
