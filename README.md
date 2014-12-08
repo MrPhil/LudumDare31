@@ -1,8 +1,7 @@
 [This is Broken]
-my Ludum Dare 31 Submission
 ===========
-
-Ludum Dare 31 compo entry http://ludumdare.com/compo/
+my Ludum Dare 31 Submission, 
+http://ludumdare.com/compo/ludum-dare-31/?action=preview&uid=165
 
 My from Scratch Engine using SDL2 and C/C++. It is incomplete, and unplayable, but I did accomplish the following features: 
 - Handle Input from Mouse, Keyboard, and Controllers 
