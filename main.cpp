@@ -7,13 +7,27 @@
 
 const char WindowTitle[25] = "MrPhil's Ludum Dare 31";
 
+SDL_Texture *laserRockSprite;
+
 // This holds our systems
 GlobalStruct Global;
 
+// Player Movement Input
 bool up = false;
 bool down = false;
 bool left = false;
 bool right = false;
+
+// Player Facing Input
+static const Sint16 deadZone = 10000;
+bool turnUp = false;
+bool turnDown = false;
+bool turnLeft = false;
+bool turnRight = false;
+bool deadZoneX = false;
+bool deadZoneY = false;
+double faceX;
+double faceY;
 
 void SwapBackground()
 {
@@ -49,7 +63,6 @@ void SwapBackground()
 		Global.BackgroundTexture = newTexture;
 	}
 }
-
 
 bool IsCollision(const SDL_Rect *a, const SDL_Rect *b)
 {
@@ -147,6 +160,108 @@ void ProcessPlayerMovement()
 	}
 }
 
+void UpdateRocks()
+{
+	for (int index = 0; index < Global.RockCount; index++)
+	{
+		if (Global.Rocks[index].RockTexture != laserRockSprite)
+		{
+			// Boing
+			if (Global.Rocks[index].RockPosition.x < 48)
+			{
+				Global.Rocks[index].xe = -Global.Rocks[index].xe * 2;
+			}
+
+			if (Global.Rocks[index].RockPosition.x > 976)
+			{
+				Global.Rocks[index].xe = -Global.Rocks[index].xe * 2;
+			}
+
+			if (Global.Rocks[index].RockPosition.y < 48)
+			{
+				Global.Rocks[index].ye = -Global.Rocks[index].ye * 2;
+			}
+
+			if (Global.Rocks[index].RockPosition.y > 728)
+			{
+				Global.Rocks[index].ye = -Global.Rocks[index].ye * 2;
+			}
+
+			Global.Rocks[index].RockPosition.x += Global.Rocks[index].xe * Global.delta;
+			Global.Rocks[index].RockPosition.y += Global.Rocks[index].ye * Global.delta;
+		}
+	}
+}
+
+void ProcessPlayerFacing()
+{
+	// Short Circuit is in DeadZone
+	if (deadZoneX && deadZoneY)
+	{
+		return;
+	}
+
+	static float movementSpeed = 1.0f;
+
+	double angleRadians = atan2(-faceX, faceY);
+	double angle = angleRadians * 57.295779513L;
+	//if (angle < 0)
+	//{
+	//	angle += Pi * 2;
+	//}
+	//angle = fmod(angle + Pi * 0.5, Pi * 2.0) ;
+
+	SDL_Log("(%f, %f) %f %f", faceX, faceY, angleRadians, angle);
+
+	Global.PlayerFacingAngle = (angle - Global.PlayerFacingAngle) / movementSpeed * Global.delta;
+
+	/*if (turnUp)
+	{
+		if (turnLeft || turnRight)
+		{
+			Global.PlayerFacingAngle -= movementSpeed * Global.delta * 0.5f;
+		}
+		else
+		{
+			Global.PlayerFacingAngle -= movementSpeed * Global.delta;
+		}
+	}
+	else if (turnDown)
+	{
+		if (turnLeft || turnRight)
+		{
+			Global.PlayerFacingAngle += movementSpeed * Global.delta * 0.5f;
+		}
+		else
+		{
+			Global.PlayerFacingAngle += movementSpeed * Global.delta;
+		}
+	}
+
+	if (turnLeft)
+	{
+		if (turnUp || turnDown)
+		{
+			Global.PlayerFacingAngle -= movementSpeed * Global.delta * 0.5f;
+		}
+		else
+		{
+			Global.PlayerFacingAngle -= movementSpeed * Global.delta;
+		}
+	}
+	else if (turnRight)
+	{
+		if (turnUp || turnDown)
+		{
+			Global.PlayerFacingAngle += movementSpeed * Global.delta * 0.5f;
+		}
+		else
+		{
+			Global.PlayerFacingAngle += movementSpeed * Global.delta;
+		}
+	}*/
+}
+
 int main(int argc, char *argv[])
 {
 	// Setup SDL2
@@ -191,8 +306,6 @@ int main(int argc, char *argv[])
 					SwapBackground();
 
 					// Place Border Lasers (Rocks that look like Lasers)
-					char imageRockSprite[] = ".\\Data\\Images\\LaserRock.png";
-					SDL_Texture *laserRockSprite = Load(imageRockSprite);
 					// - Left Fence - 800 / 24 = ~34
 					int y = 0;
 					for (int index = 0; index < 35; index++)
@@ -271,6 +384,8 @@ int main(int argc, char *argv[])
 						Global.Rocks[index].RockPosition.y = y;
 						Global.Rocks[index].RockPosition.h = 24;
 						Global.Rocks[index].RockPosition.w = 24;
+						Global.Rocks[index].xe = (float)((rand() % 25) - 12) / 1000.0f;
+						Global.Rocks[index].ye = (float)((rand() % 25) - 13) / 1000.0f;
 					}
 
 					bool Running = true;
@@ -290,6 +405,23 @@ int main(int argc, char *argv[])
 							case SDL_QUIT:
 								Running = false;
 								break;
+							case SDL_KEYUP:
+								switch (event.key.keysym.sym)
+								{
+								case SDLK_w:
+									up = false;
+									break;
+								case SDLK_s:
+									down = false;
+									break;
+								case SDLK_a:
+									left = false;
+									break;
+								case SDLK_d:
+									right = false;
+									break;
+								}
+								break;
 							case SDL_KEYDOWN:
 								switch (event.key.keysym.sym)
 								{
@@ -303,8 +435,17 @@ int main(int argc, char *argv[])
 										"Good Job! You Pressed Keypad Enter!",
 										Global.Window);
 									break;
+								case SDLK_w:
+									up = true;
+									break;
+								case SDLK_s:
+									down = true;
+									break;
 								case SDLK_a:
-									SDL_Log("A Press!");
+									left = true;
+									break;
+								case SDLK_d:
+									right = true;
 									break;
 								}
 								break;
@@ -312,7 +453,7 @@ int main(int argc, char *argv[])
 								if (Global.PlayerControllerId == -1)
 								{
 									Global.PlayerControllerId = event.cdevice.which;
-									SDL_GameControllerOpen(0);
+									SDL_GameControllerOpen(Global.PlayerControllerId);
 									SDL_Log("Player 1 controller plugged in!");
 								}
 								else
@@ -372,6 +513,41 @@ int main(int argc, char *argv[])
 									}
 								}
 								break;
+							/*case SDL_CONTROLLERAXISMOTION:
+								if (event.caxis.which == Global.PlayerControllerId)
+								{
+									if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
+									{
+										double doubleValue = (double)event.caxis.value;
+
+										if (event.caxis.value > deadZone
+											|| event.caxis.value < -deadZone)
+										{
+											deadZoneX = false;
+										}
+										else
+										{
+											deadZoneX = true;
+										}
+										faceX = doubleValue / 32767L;										
+									}
+									else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
+									{
+										double doubleValue = (double)event.caxis.value;
+
+										if (event.caxis.value > deadZone
+											|| event.caxis.value < -deadZone)
+										{
+											deadZoneY = false;
+										}
+										else
+										{
+											deadZoneY = true;
+										}
+										faceY = doubleValue / 32767L;
+									}
+								}
+								break;*/
 							case SDL_MOUSEBUTTONDOWN:
 								SwapBackground();
 								break;
@@ -382,8 +558,11 @@ int main(int argc, char *argv[])
 						// NOTE(Ludington): Should I move this to the top?
 						Global.UpdateDelta();
 
+						UpdateRocks();
+
 						// Move the player
 						ProcessPlayerMovement();
+						//ProcessPlayerFacing();
 
 						Render();
 
@@ -391,10 +570,9 @@ int main(int argc, char *argv[])
 						// go to sleep and let the CPU
 						// do something else
 						// 60 FPS means each frames takes 16.67 milliseconds
-						// I use 8 ms to give it a little wiggle room
 						if (Global.delta < 16.67f)
 						{
-							SDL_Delay(0);
+							SDL_Delay(16 - Global.delta);
 						}
 					}
 

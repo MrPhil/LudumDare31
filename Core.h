@@ -1,14 +1,20 @@
 // Core Function of Ludum Dare 31
 // Copyright 2014 Philip Ludington
 
+// Math
+#define Pi 3.14159265358979323846
+
 // Image Stuff
 SDL_Texture * Load(const char* imagePath);
+extern SDL_Texture *laserRockSprite;
 
 // The Rock Object
 struct Rock
 {
 	SDL_Texture *RockTexture;
 	SDL_Rect  RockPosition;
+	float xe;
+	float ye;
 };
 
 // THE Global/World Context/Blackboard
@@ -17,8 +23,8 @@ struct GlobalStruct
 	SDL_Window *Window;
 	SDL_Renderer *Renderer;
 
-	Uint32 lastTime = 0;
-	float delta;
+	Uint32 lastTime;
+	Uint32 delta;
 
 	SDL_Texture *BackgroundTexture;
 
@@ -28,8 +34,9 @@ struct GlobalStruct
 	Sint32 PlayerControllerId;
 	SDL_Texture *PlayerSprite;
 	SDL_Rect PlayerRect;
-	float PlayerPositionX; 
+	float PlayerPositionX;
 	float PlayerPositionY;
+	double PlayerFacingAngle;
 
 	void Init()
 	{
@@ -44,6 +51,7 @@ struct GlobalStruct
 		PlayerRect.y = (Uint32)PlayerPositionY;
 		PlayerRect.h = 24;
 		PlayerRect.w = 24;
+		PlayerFacingAngle = 90;
 		lastTime = 0;
 		delta = 0;
 	}
@@ -51,12 +59,16 @@ struct GlobalStruct
 	void UpdateDelta()
 	{
 		Uint32 currentTime = SDL_GetTicks();
-		delta = (float)(currentTime - (float)lastTime);
+		delta = currentTime - lastTime;
+		SDL_Log("%d - %d = %d", currentTime, lastTime, delta);
 		lastTime = currentTime;
 	}
 
 	void LoadSprites()
 	{
+		char imagelaserRockSprite[] = ".\\Data\\Images\\LaserRock.png";
+		laserRockSprite = Load(imagelaserRockSprite);
+
 		char imagePlayerSprite[] = ".\\Data\\Images\\PlayerSprite.png";
 		PlayerSprite = Load(imagePlayerSprite);
 

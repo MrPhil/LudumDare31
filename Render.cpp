@@ -14,7 +14,9 @@ void Render()
 	}
 
 	// Render the Player
-	SDL_RenderCopy(Global.Renderer, Global.PlayerSprite, NULL, &Global.PlayerRect);
+	SDL_Rect rotation = Global.PlayerRect;
+	SDL_RenderCopyEx(Global.Renderer, Global.PlayerSprite, NULL, 
+		&Global.PlayerRect, Global.PlayerFacingAngle, NULL, SDL_FLIP_NONE);
 
 	// Show use what we've done!
 	SDL_RenderPresent(Global.Renderer); 
